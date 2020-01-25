@@ -54,7 +54,6 @@ def get_tweets_list(username):
         n_tweet.append(tweet.id)
        
     print(get_favorited_list("realDonaldTrump", n_tweet[0]))
-    print(get_favorited_list("realDonaldTrump", n_tweet[1]))
     
     return tweets_df
 
