@@ -50,12 +50,10 @@ def get_tweets_list(username):
     tweets_df = twint.storage.panda.Tweets_df
     
     n_tweet = []
-    for tweet in tweets_df:
-        n_tweet.append(tweet)
-       
-    print(get_favorited_list("realDonaldTrump", n_tweet[0]))
+    for index, row in tweets_df.iterrows():
+        n_tweet.append(row['id'])
     
-    return tweets_df
+    return n_tweet
 
 #print(get_retweeters_list("realDonaldTrump", "1221140946320084995"))
 get_tweets_list("realDonaldTrump")
