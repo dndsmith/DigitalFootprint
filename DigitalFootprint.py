@@ -52,6 +52,9 @@ def get_tweets_list(username):
     n_tweet = []
     for tweet in tweets_df:
         n_tweet.append(tweet)
+       
+    get_favorited_list("realDonaldTrump, n_tweet[0])
+    get_favorited_list("realDonaldTrump, n_tweet[1])
     
     return tweets_df
 
