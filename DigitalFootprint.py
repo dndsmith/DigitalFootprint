@@ -50,7 +50,7 @@ def get_tweets_list(username):
     tweets_df = twint.storage.panda.Tweets_df
     
     for tweet in tweets_df:
-    get_retweeters_list("RealDonaldTrump", tweet.id)
+        get_retweeters_list("RealDonaldTrump", tweet.id)
     
     return tweets_df
 
