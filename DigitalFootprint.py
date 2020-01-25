@@ -51,4 +51,7 @@ def get_tweets_list(username):
     return tweets_df
 
 #print(get_retweeters_list("realDonaldTrump", "1221140946320084995"))
-print(get_tweets_list("realDonaldTrump"))
+get_tweets_list("realDonaldTrump"))
+for tweet in tweets_df:
+    get_retweeters_list("RealDonaldTrump, tweet.id)
+    
