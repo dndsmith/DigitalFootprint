@@ -49,9 +49,9 @@ def get_tweets_list(username):
 
     tweets_df = twint.storage.panda.Tweets_df
     
-    n_followers = []
+    n_tweet = []
     for tweet in tweets_df:
-        n_tweets.append(tweet)
+        n_tweet.append(tweet)
     
     return tweets_df
 
