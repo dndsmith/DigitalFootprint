@@ -38,6 +38,16 @@ def get_comments_list(username): #, tweet_id):
 
     replies_df = twint.storage.panda.Tweets_df
     return replies_df #[replies_df.conversation_id == tweet_id] # return pandas df
+def get_followers(username):
+    c = twint.Config()
+    c.Limit = 10
+    c.Username = username
+    c.Pandas = True
+
+    twint.run.Followers(c)
+    Followers_df = twint.storage.panda.Follow_df
+    list_of_followers = Followers_df['followers'][username]
+    return list_of_followers
 
 def get_tweets_list(username):
     c = twint.Config()
@@ -57,5 +67,7 @@ def get_tweets_list(username):
 
 #print(get_retweeters_list("realDonaldTrump", "1221140946320084995"))
 get_tweets_list("realDonaldTrump")
+print(get_followers("realDonaldTrump"))
+
 
     
