@@ -49,8 +49,9 @@ def get_tweets_list(username):
 
     tweets_df = twint.storage.panda.Tweets_df
     
+    n_followers = []
     for tweet in tweets_df:
-        get_retweeters_list("RealDonaldTrump", tweet.id)
+        n_tweets.append(tweet)
     
     return tweets_df
 
