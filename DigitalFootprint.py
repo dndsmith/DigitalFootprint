@@ -29,4 +29,16 @@ def get_user_location(username):
     user_df = twint.storage.panda.User_df
     return user_df['location'] # return pandas df because why not
 
+def get_comments_list(username, tweet_id):
+    c = twint.Config()
+    c.To = "realDonaldTrump"
+    c.Limit = 100
+    c.Pandas = True
+    twint.run.Search(c)
+
+    replies_df = twint.storage.panda.Tweets_df
+    return replies_df[replies_df.conversation_id == tweet_id] # return pandas df
+
+print(get_comments_list("realDonaldTrump", "1221140946320084995"))
+
 #print(get_retweeters_list("realDonaldTrump", "1221140946320084995"))
