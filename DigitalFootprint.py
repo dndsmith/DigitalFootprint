@@ -48,10 +48,13 @@ def get_tweets_list(username):
     twint.run.Search(c)
 
     tweets_df = twint.storage.panda.Tweets_df
+    
+    for tweet in tweets_df:
+    get_retweeters_list("RealDonaldTrump", tweet.id)
+    
     return tweets_df
 
 #print(get_retweeters_list("realDonaldTrump", "1221140946320084995"))
 get_tweets_list("realDonaldTrump")
-for tweet in tweets_df:
-    get_retweeters_list("RealDonaldTrump", tweet.id)
+
     
