@@ -44,7 +44,7 @@ def get_tweets_list(username):
     c.Username = username
     c.Limit = 1000
     c.Pandas = True
-    c.Format = "ID {id}
+    c.Format = "ID {id}"
     twint.run.Search(c)
 
     tweets_df = twint.storage.panda.Tweets_df
