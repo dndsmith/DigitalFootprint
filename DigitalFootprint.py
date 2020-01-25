@@ -53,5 +53,5 @@ def get_tweets_list(username):
 #print(get_retweeters_list("realDonaldTrump", "1221140946320084995"))
 get_tweets_list("realDonaldTrump")
 for tweet in tweets_df:
-    get_retweeters_list("RealDonaldTrump, tweet.id)
+    get_retweeters_list("RealDonaldTrump", tweet.id)
     
