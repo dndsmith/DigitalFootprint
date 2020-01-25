@@ -42,7 +42,7 @@ def get_comments_list(username): #, tweet_id):
 def get_tweets_list(username):
     c = twint.Config()
     c.Username = username
-    c.Limit = 1000
+    c.Limit = 10
     c.Pandas = True
     c.Format = "ID {id}"
     twint.run.Search(c)
