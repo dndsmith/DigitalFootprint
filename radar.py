@@ -1,12 +1,10 @@
 
+import requests
 
+headers = {'Authorization': 'prj_live_sk_97e3dcf111b9c25af024c95bf1b695ed087dc411'}
 
 def radar_geocoding(location):
-    import requests
 
-    headers = {
-        'Authorization': 'prj_live_sk_97e3dcf111b9c25af024c95bf1b695ed087dc411',
-    }
 
     params = (
         ('query', location),
