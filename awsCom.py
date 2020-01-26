@@ -1,4 +1,5 @@
 import boto3
+import pandas as pd
 
 bucketName = 'cuhackit6'
 
@@ -15,6 +16,7 @@ def awsComprehend(text):
         if list[i] >= max:
             max = list[i]
             num = i
+    
 
     return alist[num]
 
@@ -27,16 +29,21 @@ file = obj.get()['Body'].read().decode("utf-8")
 file = file.splitlines()
 
 for i in file:
-    sentiment.append(awsComprehend(i))
+    sentdict = {}
+    sentdict['Tweet'] = i
+    sentdict['Sentiment'] = awsComprehend(i)
+    sentiment.append(sentdict)
 
 newFile = 'sentiments.csv'
 
 open(newFile, 'w').close()
 
-for i in sentiment:
-    with open(newFile, 'a') as f:
-        f.write(i + ',')
-        f.close()
+#for i in sentiment:
+#    with open(newFile, 'a') as f:
+#        f.write(i + '\n')
+#        f.close()
+df = pd.DataFrame(sentiment, columns = ['Tweet', 'Sentiment'])
+df.to_csv(newFile, sep=',', encoding='utf-8')
 
 s3 = boto3.client('s3')
 s3.upload_file(newFile, bucketName, 'sentiments.csv')
