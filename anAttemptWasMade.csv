@@ -1,1 +1,11 @@
-
+Type,lat,lng,state,Sentiment
+Like,45.256631,-100.948936,South Dakota,1
+Retweet,45.256631,-100.948936,South Dakota,0
+Retweet,34.233025,-102.40918,Texas,0
+Retweet,45.022073,-93.466349,Minnesota,0
+Retweet,31.030974,-98.326329,Texas,0
+Follower,36.940324,-84.104856,Kentucky,0
+Follower,34.592092,-80.674851,South Carolina,0
+Follower,29.510662,-95.197311,Texas,0
+Follower,39.098999,-111.878816,Utah,0
+Follower,36.531544,-119.586168,California,0

@@ -8,7 +8,7 @@ import boto3
 def TweetImpact():
     return "yeet"
 
-headers = {'Authorization': 'prj_live_sk_c0114cce2321a6741a5c129ea26cbf4a18196c2c'}
+headers = {'Authorization': 'prj_live_sk_a7a2b9dc1efaa71bb8369644648f8f27cb253702'}
 
 def radar_geocoding(location):
     params = (
@@ -53,7 +53,7 @@ def get_user_location(username, index):
 
 def get_comments_list(username): #, tweet_id):
     c = twint.Config()
-    c.To = "realDonaldTrump"
+    c.To = username
     c.Limit = 10
     c.Pandas = True
     c.Store_object = True
@@ -117,9 +117,16 @@ def awsComprehend(text):
 
 ### THIS IS WHERE THE MAIN IS ###
 
-tweets_list = get_tweets_list("realDonaldTrump")
-followers_list = get_followers("realDonaldTrump")
-comments_list = get_comments_list("realDonaldTrump")
+parser = argparse.ArgumentParser(description='Map digital footprint.')
+parser.add_argument('username', type=str, nargs='+',
+                        help='enter name of Twitter user handle')
+    
+args = parser.parse_args()
+print(args.username[0])
+
+tweets_list = get_tweets_list(args.username[0])
+followers_list = get_followers(args.username[0])
+comments_list = get_comments_list(args.username[0])
 
 favorites_locations = []
 retweets_locations = []
@@ -128,8 +135,8 @@ comments_locations = []
 
 j = 0
 for tweet in tweets_list:
-    favorites_list = get_favorited_list("realDonaldTrump", tweet) #names
-    retweets_list = get_retweeters_list("realDonaldTrump", tweet) #names
+    favorites_list = get_favorited_list(args.username[0], tweet) #names
+    retweets_list = get_retweeters_list(args.username[0], tweet) #names
 
     for fav in favorites_list:
         loc = get_user_location(fav, j)
@@ -214,4 +221,4 @@ for i in comments_locations:
 #create the dataframe
 df = pd.DataFrame(rows_list)
 print(df)
-df.to_csv('./anAttemptWasMade.csv', index=False)
+df.to_csv('./anotherBitesTheDust.csv', index=False)
