@@ -11,11 +11,11 @@ def radar_geocoding(location):
     )
     try:
         response = requests.get('https://api.radar.io/v1/geocode/forward', headers=headers, params=params)
-        print (response.json())
+        # print (response.json())
         country=response.json()['addresses'][0]['country']
         if country=='United States':
 
-            return {'lat':response.json()['addresses'][0]['latitude'], 'lng': response.json()['addresses'][0]['longitude']}
+            return {'lat':response.json()['addresses'][0]['latitude'], 'lng': response.json()['addresses'][0]['longitude'], 'city': response.json()['addresses'][0]['city'], 'state':response.json()['addresses'][0]['state']}
     except:
         return -1#Fail Condition
 
