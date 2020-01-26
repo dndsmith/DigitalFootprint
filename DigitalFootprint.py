@@ -66,7 +66,7 @@ def get_user_location(username, index, api_key):
 def get_comments_list(username): #, tweet_id):
     c = twint.Config()
     c.To = username
-    c.Limit = 10
+    c.Limit = 100
     c.Pandas = True
     c.Store_object = True
     twint.run.Search(c)
@@ -79,7 +79,7 @@ def get_comments_list(username): #, tweet_id):
 
 def get_followers(username):
     c = twint.Config()
-    c.Limit = 10
+    c.Limit = 100
     c.Username = username
     c.Store_object = True
     c.User_full = True
@@ -97,7 +97,7 @@ def get_followers(username):
 def get_tweets_list(username):
     c = twint.Config()
     c.Username = username
-    c.Limit = 2
+    c.Limit = 100
     c.Pandas = True
     c.Format = "ID {id}"
     twint.run.Search(c)
@@ -235,8 +235,6 @@ for i in comments_locations:
         continue
 
 #create the dataframe
-print(rows_list)
-
 df = pd.DataFrame(rows_list)
 print(df)
-df.to_csv('./noSleepItWouldSeem.csv', index=False)
+df.to_csv('./AllMight.csv', index=False)
