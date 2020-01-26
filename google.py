@@ -1,6 +1,6 @@
 import googlemaps
 
-gmaps = googlemaps.Client(key='AIzaSyDd7rRS3BjA5UhFJSJhaFgNLZmqHF4OCWo')
+gmaps = googlemaps.Client(key='')
 
 
 
