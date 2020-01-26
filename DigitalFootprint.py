@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import re
 import argparse
+import boto3
 
 def TweetImpact():
     return "yeet"
@@ -18,7 +19,6 @@ def radar_geocoding(location):
         #print (response.json())
         country=response.json()['addresses'][0]['country']
         if country=='United States':
-
             return {'lat':response.json()['addresses'][0]['latitude'], 'lng': response.json()['addresses'][0]['longitude'], 'city': response.json()['addresses'][0]['city'], 'state':response.json()['addresses'][0]['state']}
     except:
         return -1 #Fail Condition
@@ -45,21 +45,24 @@ def get_user_location(username, index):
 
     user = twint.output.users_list
     loc = radar_geocoding(user[index].location)
-    #print(loc)
     if loc == -1 or loc == None:
-        return { 'lat': 'NA', 'lng': 'NA', 'city': 'NA', 'state': 'NA' }
+        return None
     else:
         return loc
 
 def get_comments_list(username): #, tweet_id):
     c = twint.Config()
     c.To = "realDonaldTrump"
-    c.Limit = 1000
+    c.Limit = 10
     c.Pandas = True
+    c.Store_object = True
     twint.run.Search(c)
 
-    replies_df = twint.storage.panda.Tweets_df
-    return replies_df #[replies_df.conversation_id == tweet_id] # return pandas df
+    tweets_list = twint.output.tweets_list
+    comments = []
+    for t in tweets_list:
+        comments.append({'text': t.tweet, 'username': t.username})
+    return comments
 
 def get_followers(username):
     c = twint.Config()
@@ -90,15 +93,34 @@ def get_tweets_list(username):
     
     return n_tweet # return list of tweet ids
 
+def awsComprehend(text):
+    comprehend = boto3.client('comprehend')
+    response = comprehend.detect_sentiment(Text=text, LanguageCode='en')
+    positive, negative, neutral, mixed = response['SentimentScore']['Positive'], response['SentimentScore']['Negative'], response['SentimentScore']['Neutral'], response['SentimentScore']['Mixed']
+    list = [positive, negative, neutral, mixed]
+    alist = [1, -1, 0, 0]
+
+    max = list[0]
+    num = 0
+    for i in range(len(list)):
+        if list[i] >= max:
+            max = list[i]
+            num = i
+    
+
+    return alist[num]
+
 
 ### THIS IS WHERE THE MAIN IS ###
 
 tweets_list = get_tweets_list("realDonaldTrump")
-followers_list = get_followers("realDonaldTrump")
+#followers_list = get_followers("realDonaldTrump")
+comments_list = get_comments_list("realDonaldTrump")
 
 favorites_locations = []
 retweets_locations = []
 followers_locations = []
+comments_locations = []
 
 j = 0
 for tweet in tweets_list:
@@ -106,13 +128,24 @@ for tweet in tweets_list:
     retweets_list = get_retweeters_list("realDonaldTrump", tweet) #names
 
     for fav in favorites_list:
-        favorites_locations.append(get_user_location(fav, j))
-        print(favorites_locations)
+        loc = get_user_location(fav, j)
+        if loc:
+            favorites_locations.append(loc)
         j += 1
     for rtwt in retweets_list:
-        retweets_locations.append(get_user_location(rtwt, j))
+        loc = get_user_location(rtwt, j)
+        if loc:
+            retweets_locations.append(loc)
         j += 1
-    for flw in 
+    # for flw in followers_list:
+    #     followers_locations.append(get_user_location(flw, j))
+    #     j += 1
+    
+for com in comments_list:
+    loc = get_user_location(com['username'], j)
+    if loc:
+        comments_locations.append({'text': com['text'], 'location': loc})
+    j += 1
 
 rows_list = []
 # add the favorited locations
@@ -137,7 +170,29 @@ for i in retweets_locations:
     row_dict['Sentiment'] = 'NA'
     rows_list.append(row_dict)
 
+# add the followers locations
+# for i in followers_locations:
+#     row_dict = {}
+#     row_dict['Type'] = 'Follower'
+#     row_dict['lat'] = i['lat']
+#     row_dict['lng'] = i['lng']
+#     row_dict['city'] = i['city']
+#     row_dict['state'] = i['state']
+#     row_dict['Sentiment'] = 'NA'
+#     rows_list.append(row_dict)
+
+# add the comments locations
+for i in comments_locations:
+    row_dict = {}
+    row_dict['Type'] = 'Commenter'
+    row_dict['lat'] = i['location']['lat']
+    row_dict['lng'] = i['location']['lng']
+    row_dict['city'] = i['location']['city']
+    row_dict['state'] = i['location']['state']
+    row_dict['Sentiment'] = awsComprehend(i['text'])
+    rows_list.append(row_dict)
+
 #create the dataframe
 df = pd.DataFrame(rows_list)
 print(df)
-df.to_csv('./lordHelpUs.csv', index=False)
+df.to_csv('./anAttemptWasMade.csv', index=False)
