@@ -1,5 +1,5 @@
 import twint
-import pandas
+import pandas as pd
 import requests
 import re
 import argparse
@@ -38,6 +38,7 @@ def get_comments_list(username): #, tweet_id):
 
     replies_df = twint.storage.panda.Tweets_df
     return replies_df #[replies_df.conversation_id == tweet_id] # return pandas df
+
 def get_followers(username):
     c = twint.Config()
     c.Limit = 10
@@ -63,11 +64,41 @@ def get_tweets_list(username):
     for index, row in tweets_df.iterrows():
         n_tweet.append(row['id'])
     
-    return n_tweet
-
-#print(get_retweeters_list("realDonaldTrump", "1221140946320084995"))
-get_tweets_list("realDonaldTrump")
-print(get_followers("realDonaldTrump"))
+    return n_tweet # return list of tweet ids
 
 
-    
+tweets_list = get_tweets_list("realDonaldTrump")
+followers_list = get_followers("realDonaldTrump")
+
+favorites_locations = []
+retweets_locations = []
+
+for tweet in tweets_list:
+    favorites_list = get_favorited_list("realDonaldTrump", tweet) #names
+    retweets_list = get_retweeters_list("realDonaldTrump", tweet) #names
+
+    for fav in favorites_list:
+        favorites_locations.append(get_user_location(fav))
+    for rtwt in retweets_list:
+        retweets_locations.append(et_user_location(rtwt))
+
+rows_list = []
+# add the favorited locations
+for i in favorites_locations:
+    row_dict = {}
+    row_dict['Type'] = 'Like'
+    row_dict['Location'] = i
+    row_dict['Sentiment'] = 'POS'
+    rows_list.append(row_dict)
+
+# add the retweeted locations
+for i in retweets_locations:
+    row_dict = {}
+    row_dict['Type'] = 'Retweet'
+    row_dict['Location'] = i
+    row_dict['Sentiment'] = 'NA'
+    rows_list.append(row_dict)
+
+#create the dataframe
+df = pd.DataFrame(rows_list)
+print(df)
