@@ -1,41 +1,41 @@
-Type,Location,Sentiment
-Like,,POS
-Like,"Tampa, FLA",POS
-Like,,POS
-Like,#TheGreatAwakening #WWG1WGA,POS
-Like,Texas,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,"McKees Rocks, Pa.",POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Like,,POS
-Retweet,USA,NA
-Retweet,,NA
-Retweet,"Delaware, USA",NA
-Retweet,Earth~ ,NA
-Retweet,Earth~ ,NA
-Retweet,,NA
-Retweet,,NA
-Retweet,,NA
-Retweet,,NA
-Retweet,,NA
-Retweet,,NA
-Retweet,,NA
-Retweet,,NA
-Retweet,"Massachusetts, USA",NA
-Retweet,Sydney Australia,NA
-Retweet,,NA
-Retweet,"Illinois, USA",NA
-Retweet,,NA
-Retweet,heaven soon,NA
-Retweet,,NA
+Type,lat,lng,city,state,Sentiment
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,44.169449,-93.952851,Mankato,Minnesota,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,36.819087,-94.375909,Neosho,Missouri,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,NA,NA,NA,NA,POS
+Like,44.933577,-91.388875,Chippewa Falls,Wisconsin,POS
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,38.82652,-77.01712,Washington,District of Columbia,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,32.72793,-117.15529,San Diego,California,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,42.355492,-71.048611,Boston,Massachusetts,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,NA,NA,NA,NA,NA
+Retweet,41.074727,-111.966991,Layton,Utah,NA
+Retweet,NA,NA,NA,NA,NA

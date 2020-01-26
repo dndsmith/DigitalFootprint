@@ -7,6 +7,22 @@ import argparse
 def TweetImpact():
     return "yeet"
 
+headers = {'Authorization': 'prj_live_sk_97e3dcf111b9c25af024c95bf1b695ed087dc411'}
+
+def radar_geocoding(location):
+    params = (
+        ('query', location),
+    )
+    try:
+        response = requests.get('https://api.radar.io/v1/geocode/forward', headers=headers, params=params)
+        #print (response.json())
+        country=response.json()['addresses'][0]['country']
+        if country=='United States':
+
+            return {'lat':response.json()['addresses'][0]['latitude'], 'lng': response.json()['addresses'][0]['longitude'], 'city': response.json()['addresses'][0]['city'], 'state':response.json()['addresses'][0]['state']}
+    except:
+        return -1 #Fail Condition
+
 def get_retweeters_list(username, tweet_id):
     r = requests.get('https://twitter.com/i/activity/retweeted_popup?id='+tweet_id)
     text = r.text
@@ -28,7 +44,12 @@ def get_user_location(username, index):
     twint.run.Lookup(c)
 
     user = twint.output.users_list
-    return user[index].location
+    loc = radar_geocoding(user[index].location)
+    #print(loc)
+    if loc == -1 or loc == None:
+        return { 'lat': 'NA', 'lng': 'NA', 'city': 'NA', 'state': 'NA' }
+    else:
+        return loc
 
 def get_comments_list(username): #, tweet_id):
     c = twint.Config()
@@ -68,6 +89,8 @@ def get_tweets_list(username):
     return n_tweet # return list of tweet ids
 
 
+### THIS IS WHERE THE MAIN IS ###
+
 tweets_list = get_tweets_list("realDonaldTrump")
 #followers_list = get_followers("realDonaldTrump")
 
@@ -81,6 +104,7 @@ for tweet in tweets_list:
 
     for fav in favorites_list:
         favorites_locations.append(get_user_location(fav, j))
+        print(favorites_locations)
         j += 1
     for rtwt in retweets_list:
         retweets_locations.append(get_user_location(rtwt, j))
@@ -91,15 +115,21 @@ rows_list = []
 for i in favorites_locations:
     row_dict = {}
     row_dict['Type'] = 'Like'
-    row_dict['Location'] = i
-    row_dict['Sentiment'] = 'POS'
+    row_dict['lat'] = i['lat']
+    row_dict['lng'] = i['lng']
+    row_dict['city'] = i['city']
+    row_dict['state'] = i['state']
+    row_dict['Sentiment'] = '1'
     rows_list.append(row_dict)
 
 # add the retweeted locations
 for i in retweets_locations:
     row_dict = {}
     row_dict['Type'] = 'Retweet'
-    row_dict['Location'] = i
+    row_dict['lat'] = i['lat']
+    row_dict['lng'] = i['lng']
+    row_dict['city'] = i['city']
+    row_dict['state'] = i['state']
     row_dict['Sentiment'] = 'NA'
     rows_list.append(row_dict)
 
