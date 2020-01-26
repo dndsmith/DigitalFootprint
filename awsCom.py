@@ -24,26 +24,28 @@ sentiment = []
 s3 = boto3.resource('s3')
 s3.meta.client.download_file(bucketName, 'data.txt', 'data.txt')
 obj = s3.Object(bucketName, 'data.txt')
+# read content of file
 file = obj.get()['Body'].read().decode("utf-8")
 
+# format it doing line by line
 file = file.splitlines()
 
+# write each row (dictionary) to list
 for i in file:
     sentdict = {}
     sentdict['Tweet'] = i
     sentdict['Sentiment'] = awsComprehend(i)
     sentiment.append(sentdict)
 
+# clear file in case it wasn't empty before
 newFile = 'sentiments.csv'
 
 open(newFile, 'w').close()
 
-#for i in sentiment:
-#    with open(newFile, 'a') as f:
-#        f.write(i + '\n')
-#        f.close()
+# write dataframe to pandas
 df = pd.DataFrame(sentiment, columns = ['Tweet', 'Sentiment'])
 df.to_csv(newFile, sep=',', encoding='utf-8')
 
+# upload csv to s3 bucket
 s3 = boto3.client('s3')
 s3.upload_file(newFile, bucketName, 'sentiments.csv')
