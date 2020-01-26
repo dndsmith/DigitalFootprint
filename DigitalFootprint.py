@@ -66,10 +66,12 @@ def get_followers(username):
     c.Limit = 2
     c.Username = username
     c.Pandas = True
+    c.Store_object = True
+    c.User_full = True
 
     twint.run.Followers(c)
-    Followers_df = twint.storage.panda.Follow_df
-    list_of_followers = Followers_df['followers'][username]
+    followers = twint.output.users_list
+    
     return list_of_followers
 
 def get_tweets_list(username):
@@ -92,10 +94,11 @@ def get_tweets_list(username):
 ### THIS IS WHERE THE MAIN IS ###
 
 tweets_list = get_tweets_list("realDonaldTrump")
-#followers_list = get_followers("realDonaldTrump")
+followers_list = get_followers("realDonaldTrump")
 
 favorites_locations = []
 retweets_locations = []
+followers_locations = []
 
 j = 0
 for tweet in tweets_list:
@@ -109,6 +112,7 @@ for tweet in tweets_list:
     for rtwt in retweets_list:
         retweets_locations.append(get_user_location(rtwt, j))
         j += 1
+    for flw in 
 
 rows_list = []
 # add the favorited locations
