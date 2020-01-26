@@ -4,13 +4,23 @@ import requests
 import re
 import argparse
 import boto3
+import googlemaps
+import pprint
+
+def google_geocoding(location, api_key):
+    gmaps = googlemaps.Client(key=api_key)
+    try:
+        geocode_result = gmaps.geocode(location)
+        print(geocode_result)
+        return geocode_result[0]['geometry']['location']
+    except:
+        return -1#Fail
 
 def TweetImpact():
     return "yeet"
 
-headers = {'Authorization': 'prj_live_sk_a7a2b9dc1efaa71bb8369644648f8f27cb253702'}
-
-def radar_geocoding(location):
+def radar_geocoding(location, api_key):
+    headers = {'Authorization': api_key}
     params = (
         ('query', location),
     )
@@ -35,16 +45,18 @@ def get_favorited_list(username, tweet_id):
     x = re.findall('div class=\\\\"account  js-actionable-user js-profile-popup-actionable \\\\" data-screen-name=\\\\"(.+?)\\\\" data-user-id=\\\\"', text)
     return x[:1]
 
-def get_user_location(username, index):
+def get_user_location(username, index, api_key):
     c = twint.Config()
     c.Username = username
     c.Format = "Location: {location}"
     c.Store_object = True
     c.User_full = True
     twint.run.Lookup(c)
+    print(api_key)
 
     user = twint.output.users_list
-    loc = radar_geocoding(user[index].location)
+    print(user[index].location)
+    loc = google_geocoding(user[index].location, api_key)
     print(loc)
     if loc == -1 or loc == None:
         return None
@@ -71,6 +83,7 @@ def get_followers(username):
     c.Username = username
     c.Store_object = True
     c.User_full = True
+    c.Format = "Follower: {username} Tweet: {tweet}"
 
     twint.run.Followers(c)
     followers = twint.output.users_list
@@ -118,15 +131,16 @@ def awsComprehend(text):
 ### THIS IS WHERE THE MAIN IS ###
 
 parser = argparse.ArgumentParser(description='Map digital footprint.')
-parser.add_argument('username', type=str, nargs='+',
+parser.add_argument('--username', dest='username', type=str, default='realDonaldTrump',
                         help='enter name of Twitter user handle')
+parser.add_argument('--google_key', dest='google_key', type=str,
+                        help='enter google maps api key')
     
 args = parser.parse_args()
-print(args.username[0])
 
-tweets_list = get_tweets_list(args.username[0])
-followers_list = get_followers(args.username[0])
-comments_list = get_comments_list(args.username[0])
+tweets_list = get_tweets_list(args.username)
+followers_list = get_followers(args.username)
+comments_list = get_comments_list(args.username)
 
 favorites_locations = []
 retweets_locations = []
@@ -135,32 +149,38 @@ comments_locations = []
 
 j = 0
 for tweet in tweets_list:
-    favorites_list = get_favorited_list(args.username[0], tweet) #names
-    retweets_list = get_retweeters_list(args.username[0], tweet) #names
+    favorites_list = get_favorited_list(args.username, tweet) #names
+    retweets_list = get_retweeters_list(args.username, tweet) #names
 
     for fav in favorites_list:
-        loc = get_user_location(fav, j)
+        loc = get_user_location(fav, j, args.google_key)
+        print(loc)
         if loc:
             favorites_locations.append(loc)
         j += 1
     for rtwt in retweets_list:
-        loc = get_user_location(rtwt, j)
+        loc = get_user_location(rtwt, j, args.google_key)
+        print(loc)
         if loc:
             retweets_locations.append(loc)
         j += 1
 
 for flw in followers_list:
-    loc = get_user_location(flw, j)
+    loc = get_user_location(flw, j, args.google_key)
+    print(loc)
     if loc:
         followers_locations.append(loc)
     j += 1
 
 for com in comments_list:
-    loc = get_user_location(com['username'], j)
+    loc = get_user_location(com['username'], j, args.google_key)
+    print(loc)
     if loc:
         comments_locations.append({'text': com['text'], 'location': loc})
     j += 1
 
+print(favorites_locations)
+print(retweets_locations)
 rows_list = []
 # add the favorited locations
 for i in favorites_locations:
@@ -169,7 +189,6 @@ for i in favorites_locations:
         row_dict['Type'] = 'Like'
         row_dict['lat'] = i['lat']
         row_dict['lng'] = i['lng']
-        row_dict['state'] = i['state']
         row_dict['Sentiment'] = 1
         rows_list.append(row_dict)
     except:
@@ -183,7 +202,6 @@ for i in retweets_locations:
         row_dict['Type'] = 'Retweet'
         row_dict['lat'] = i['lat']
         row_dict['lng'] = i['lng']
-        row_dict['state'] = i['state']
         row_dict['Sentiment'] = 0
         rows_list.append(row_dict)
     except:
@@ -197,7 +215,6 @@ for i in followers_locations:
         row_dict['Type'] = 'Follower'
         row_dict['lat'] = i['lat']
         row_dict['lng'] = i['lng']
-        row_dict['state'] = i['state']
         row_dict['Sentiment'] = 0
         rows_list.append(row_dict)
     except:
@@ -211,7 +228,6 @@ for i in comments_locations:
         row_dict['Type'] = 'Commenter'
         row_dict['lat'] = i['location']['lat']
         row_dict['lng'] = i['location']['lng']
-        row_dict['state'] = i['location']['state']
         row_dict['Sentiment'] = awsComprehend(i['text'])
         rows_list.append(row_dict)
     except:
@@ -219,6 +235,8 @@ for i in comments_locations:
         continue
 
 #create the dataframe
+print(rows_list)
+
 df = pd.DataFrame(rows_list)
 print(df)
-df.to_csv('./anotherBitesTheDust.csv', index=False)
+df.to_csv('./noSleepItWouldSeem.csv', index=False)
