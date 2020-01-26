@@ -11,23 +11,24 @@ def get_retweeters_list(username, tweet_id):
     r = requests.get('https://twitter.com/i/activity/retweeted_popup?id='+tweet_id)
     text = r.text
     x = re.findall('div class=\\\\"account  js-actionable-user js-profile-popup-actionable \\\\" data-screen-name=\\\\"(.+?)\\\\" data-user-id=\\\\"', text)
-    return x
+    return x[:1]
 
 def get_favorited_list(username, tweet_id):
     r = requests.get('https://twitter.com/i/activity/favorited_popup?id='+tweet_id)
     text = r.text
     x = re.findall('div class=\\\\"account  js-actionable-user js-profile-popup-actionable \\\\" data-screen-name=\\\\"(.+?)\\\\" data-user-id=\\\\"', text)
-    return x
+    return x[:1]
 
-def get_user_location(username):
+def get_user_location(username, index):
     c = twint.Config()
-    c.Username = "realDonaldTrump"
-    #c.Format = "Location: {location}"
-    c.Pandas = True
+    c.Username = username
+    c.Format = "Location: {location}"
+    c.Store_object = True
+    c.User_full = True
     twint.run.Lookup(c)
 
-    user_df = twint.storage.panda.User_df
-    return user_df['location'] # return pandas df because why not
+    user = twint.output.users_list
+    return user[index].location
 
 def get_comments_list(username): #, tweet_id):
     c = twint.Config()
@@ -41,7 +42,7 @@ def get_comments_list(username): #, tweet_id):
 
 def get_followers(username):
     c = twint.Config()
-    c.Limit = 10
+    c.Limit = 2
     c.Username = username
     c.Pandas = True
 
@@ -53,7 +54,7 @@ def get_followers(username):
 def get_tweets_list(username):
     c = twint.Config()
     c.Username = username
-    c.Limit = 10
+    c.Limit = 2
     c.Pandas = True
     c.Format = "ID {id}"
     twint.run.Search(c)
@@ -68,19 +69,22 @@ def get_tweets_list(username):
 
 
 tweets_list = get_tweets_list("realDonaldTrump")
-followers_list = get_followers("realDonaldTrump")
+#followers_list = get_followers("realDonaldTrump")
 
 favorites_locations = []
 retweets_locations = []
 
+j = 0
 for tweet in tweets_list:
     favorites_list = get_favorited_list("realDonaldTrump", tweet) #names
     retweets_list = get_retweeters_list("realDonaldTrump", tweet) #names
 
     for fav in favorites_list:
-        favorites_locations.append(get_user_location(fav))
+        favorites_locations.append(get_user_location(fav, j))
+        j += 1
     for rtwt in retweets_list:
-        retweets_locations.append(et_user_location(rtwt))
+        retweets_locations.append(get_user_location(rtwt, j))
+        j += 1
 
 rows_list = []
 # add the favorited locations
@@ -102,3 +106,4 @@ for i in retweets_locations:
 #create the dataframe
 df = pd.DataFrame(rows_list)
 print(df)
+df.to_csv('./lordHelpUs.csv', index=False)
